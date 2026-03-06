@@ -1,0 +1,84 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: us-east-1
+  PROJECT_NAME: node-3tier
+  ENVIRONMENT: dev
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies and build Web
+        working-directory: ./web
+        run: |
+          npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::833899002429:role/node-3tier-dev-github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Web to CodeDeploy
+        run: |
+          echo "Zipping web application..."
+          zip -r web-app.zip web/ appspec.yml
+          
+          echo "Pushing artifact to S3 temporarily..."
+          aws s3 cp web-app.zip s3://${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429/web-app.zip
+          
+          echo "Triggering CodeDeploy..."
+          aws deploy create-deployment \
+            --application-name ${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-web-app \
+            --deployment-group-name ${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-web-dg \
+            --s3-location bucket=${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429,key=web-app.zip,bundleType=zip
+
+  build-and-deploy-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies and build API
+        working-directory: ./api
+        run: |
+          npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::833899002429:role/node-3tier-dev-github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy API to CodeDeploy
+        run: |
+          echo "Zipping api application..."
+          zip -r api-app.zip api/ appspec.yml
+          
+          aws s3 cp api-app.zip s3://${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429/api-app.zip
+          
+          echo "Triggering CodeDeploy..."
+          aws deploy create-deployment \
+            --application-name ${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-api-app \
+            --deployment-group-name ${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-api-dg \
+            --s3-location bucket=${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429,key=api-app.zip,bundleType=zip

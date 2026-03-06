@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      # Install Node 18
+      - curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+      - apt-get install -y nodejs
+  build:
+    commands:
+      - echo "Building API application..."
+      - cd api
+      - npm install
+artifacts:
+  files:
+    - api/**/*
+    - appspec.yml
+  discard-paths: no

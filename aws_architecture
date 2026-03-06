@@ -1,0 +1,60 @@
+digraph "3-Tier Node.js Application Architecture" {
+	graph [fontcolor="#2D3436" fontname="Sans-Serif" fontsize=15 label="3-Tier Node.js Application Architecture" nodesep=0.60 pad=2.0 rankdir=TB ranksep=0.75 splines=ortho]
+	node [fixedsize=true fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 height=1.4 imagescale=true labelloc=b shape=box style=rounded width=1.4]
+	edge [color="#7B8894"]
+	bb202bcf6e4d4f508602eec71d0ba48e [label=User height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/onprem/client/client.png" shape=none]
+	"614928c0126f4c1dad970f888c19284f" [label="CloudFront CDN" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/network/cloudfront.png" shape=none]
+	"095c62178e6949c9b5a250e40176fa10" [label="GitHub Repository" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/onprem/vcs/github.png" shape=none]
+	cb478c05a9554df38bbe5dced4ce2688 [label="Deployment Artifacts" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/storage/simple-storage-service-s3.png" shape=none]
+	f1b3603423dd423894fd5b2a783e162c [label="AWS CodeDeploy" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/devtools/codedeploy.png" shape=none]
+	"095c62178e6949c9b5a250e40176fa10" -> cb478c05a9554df38bbe5dced4ce2688 [label="CI/CD Push" dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	cb478c05a9554df38bbe5dced4ce2688 -> f1b3603423dd423894fd5b2a783e162c [label=Trigger dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	subgraph "cluster_AWS Cloud (us-east-1)" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="AWS Cloud (us-east-1)" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		subgraph cluster_VPC {
+			graph [bgcolor="#EBF3E7" fontname="Sans-Serif" fontsize=12 label=VPC labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+			"6d44a80b50734309a4548273e8c226d1" [label="Internet Gateway" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/network/internet-gateway.png" shape=none]
+			bb488529cf304638b4296bcb0e76cbe2 [label="Application Load Balancer" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/network/elb-application-load-balancer.png" shape=none]
+			subgraph "cluster_Public Subnets" {
+				graph [bgcolor="#ECE8F6" fontname="Sans-Serif" fontsize=12 label="Public Subnets" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+				"2baa693a2eaf483ba453ccf7e38807ff" [label="NAT Gateway" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/network/nat-gateway.png" shape=none]
+			}
+			subgraph "cluster_Private App Subnets" {
+				graph [bgcolor="#ECE8F6" fontname="Sans-Serif" fontsize=12 label="Private App Subnets" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+				subgraph "cluster_Web Tier ASG" {
+					graph [bgcolor="#FDF7E3" fontname="Sans-Serif" fontsize=12 label="Web Tier ASG" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+					"5a5a52512a8b450b88a5cf8a4b90c75c" [label="Web Node 1" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/compute/ec2.png" shape=none]
+					"55770a97319246b0ba44cb14b29212a8" [label="Web Node 2" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/compute/ec2.png" shape=none]
+				}
+				subgraph "cluster_API Tier ASG" {
+					graph [bgcolor="#FDF7E3" fontname="Sans-Serif" fontsize=12 label="API Tier ASG" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+					"7d222a306a0b47b4b01b8da346100e7e" [label="API Node 1" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/compute/ec2.png" shape=none]
+					fdcc173437ac4e25868270165b8dc63c [label="API Node 2" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/compute/ec2.png" shape=none]
+				}
+			}
+			subgraph "cluster_Private DB Subnets" {
+				graph [bgcolor="#ECE8F6" fontname="Sans-Serif" fontsize=12 label="Private DB Subnets" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+				efe9933e7d444c76b233958a3e8912d0 [label="PostgreSQL Multi-AZ" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/database/rds.png" shape=none]
+			}
+			"2868d42091e2473eb66a24a3f9b8e8b5" [label="DB Credentials" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/security/secrets-manager.png" shape=none]
+			cf8f7387095749578251ef451900160a [label="CloudWatch Logs" height=1.9 image="/home/viresh/Downloads/node-3tier-app2/venv/lib/python3.12/site-packages/resources/aws/management/cloudwatch.png" shape=none]
+		}
+	}
+	bb202bcf6e4d4f508602eec71d0ba48e -> "614928c0126f4c1dad970f888c19284f" [color=darkorange dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"614928c0126f4c1dad970f888c19284f" -> bb488529cf304638b4296bcb0e76cbe2 [label="Dynamic Requests" color=darkorange dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"614928c0126f4c1dad970f888c19284f" -> bb202bcf6e4d4f508602eec71d0ba48e [label="Cached Assets" color=darkgreen dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dashed]
+	bb488529cf304638b4296bcb0e76cbe2 -> "5a5a52512a8b450b88a5cf8a4b90c75c" [label="Host: web.*" dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	bb488529cf304638b4296bcb0e76cbe2 -> "7d222a306a0b47b4b01b8da346100e7e" [label="Host: api.*" dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"5a5a52512a8b450b88a5cf8a4b90c75c" -> bb488529cf304638b4296bcb0e76cbe2 [label="API Calls" dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"7d222a306a0b47b4b01b8da346100e7e" -> efe9933e7d444c76b233958a3e8912d0 [label=Queries color=firebrick dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"7d222a306a0b47b4b01b8da346100e7e" -> "2868d42091e2473eb66a24a3f9b8e8b5" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dashed]
+	"5a5a52512a8b450b88a5cf8a4b90c75c" -> "2868d42091e2473eb66a24a3f9b8e8b5" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dashed]
+	"5a5a52512a8b450b88a5cf8a4b90c75c" -> cf8f7387095749578251ef451900160a [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dotted]
+	f1b3603423dd423894fd5b2a783e162c -> "5a5a52512a8b450b88a5cf8a4b90c75c" [color=purple dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dashed]
+	"55770a97319246b0ba44cb14b29212a8" -> cf8f7387095749578251ef451900160a [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dotted]
+	f1b3603423dd423894fd5b2a783e162c -> "55770a97319246b0ba44cb14b29212a8" [color=purple dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dashed]
+	"7d222a306a0b47b4b01b8da346100e7e" -> cf8f7387095749578251ef451900160a [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dotted]
+	f1b3603423dd423894fd5b2a783e162c -> "7d222a306a0b47b4b01b8da346100e7e" [color=purple dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dashed]
+	fdcc173437ac4e25868270165b8dc63c -> cf8f7387095749578251ef451900160a [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dotted]
+	f1b3603423dd423894fd5b2a783e162c -> fdcc173437ac4e25868270165b8dc63c [color=purple dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 style=dashed]
+}

@@ -59,3 +59,31 @@ typings/
 
 # next.js build output
 .next
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfplan
+*.tfvars
+.terraformrc
+terraform.rc
+
+# Packer
+packer_cache/
+*.box
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.py
+
+# Documentation and Diagrams
+Agent.MD
+ARCHITECTURE.md
+aws_architecture/
+aws_architecture.png
+generate_diagram.py

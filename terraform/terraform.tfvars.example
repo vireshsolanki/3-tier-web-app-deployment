@@ -1,0 +1,26 @@
+# AWS Configuration
+aws_region          = "us-east-1"
+environment         = "dev"
+project_name        = "node-3tier"
+
+# Network Configuration
+vpc_cidr            = "10.0.0.0/16"
+
+# Domain & SSL (Required for CloudFront & HTTPS)
+domain_name         = "example.com"
+web_subdomain       = "web"
+api_subdomain       = "api"
+acm_certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/your-uuid-here"
+
+# Database Configuration
+db_instance_class   = "db.t4g.micro"
+db_name             = "nodeappdb"
+db_username         = "admin"
+# db_password       = "change-me-if-not-using-secrets-manager"
+
+# Compute Configuration (Graviton instances for cost efficiency)
+web_instance_type   = "t4g.micro"
+api_instance_type   = "t4g.micro"
+
+# Optional: AMI ID override (if you don't want to use the latest golden-ami lookup)
+# ami_id            = "ami-xxxxxx"

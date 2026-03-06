@@ -120,6 +120,27 @@ resource "aws_iam_role_policy" "read_secrets" {
   })
 }
 
+resource "aws_iam_role_policy" "ec2_s3_access" {
+  name = "${var.project_name}-${var.environment}-ec2-s3-policy"
+  role = aws_iam_role.ec2_codedeploy_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:GetObject",
+          "s3:ListBucket"
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:s3:::${var.project_name}-${var.environment}-deployments-833899002429",
+          "arn:aws:s3:::${var.project_name}-${var.environment}-deployments-833899002429/*"
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_instance_profile" "app_profile" {
   name = "${var.project_name}-${var.environment}-app-instance-profile"
   role = aws_iam_role.ec2_codedeploy_role.name

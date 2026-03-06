@@ -20,3 +20,12 @@ resource "aws_cloudwatch_log_group" "api" {
     Tier        = "api"
   }
 }
+resource "aws_cloudwatch_log_group" "pm2" {
+  name              = "/ecs/${var.project_name}/${var.environment}/pm2-logs"
+  retention_in_days = 3
+}
+
+resource "aws_cloudwatch_log_group" "syslog" {
+  name              = "/ecs/${var.project_name}/${var.environment}/syslog"
+  retention_in_days = 3
+}

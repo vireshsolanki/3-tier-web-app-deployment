@@ -51,6 +51,7 @@ module "database" {
   db_password       = coalesce(var.db_password, module.secrets.db_password)
 }
 
+/*
 module "codedeploy" {
   source = "./modules/codedeploy"
 
@@ -62,3 +63,4 @@ module "codedeploy" {
   web_target_group_name = module.compute.web_target_group_name
   api_target_group_name = module.compute.api_target_group_name
 }
+*/

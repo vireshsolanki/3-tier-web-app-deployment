@@ -13,6 +13,7 @@ env:
   PROJECT_NAME: node-3tier
   ENVIRONMENT: dev
   DEPLOY_BUCKET: node-3tier-dev-deployments-833899002429
+  DB_SECRET_ARN: arn:aws:secretsmanager:us-east-1:833899002429:secret:node-3tier-dev-db-password-iAe6jK
 
 jobs:
   build-and-deploy-web:
@@ -115,6 +116,10 @@ jobs:
               "sudo mkdir -p /var/www/api",
               "sudo unzip -o /tmp/api-app.zip -d /var/www/",
               "sudo /snap/bin/aws s3 cp s3://${{ env.DEPLOY_BUCKET }}/env/api.env /var/www/api/.env || sudo aws s3 cp s3://${{ env.DEPLOY_BUCKET }}/env/api.env /var/www/api/.env",
+              "sudo /snap/bin/aws secretsmanager get-secret-value --secret-id ${{ env.DB_SECRET_ARN }} --query SecretString --output text | sudo tee /tmp/db_pass.txt > /dev/null",
+              "sudo sed -i '/^DBPASS=/d' /var/www/api/.env",
+              "echo \"DBPASS=$(cat /tmp/db_pass.txt)\" | sudo tee -a /var/www/api/.env",
+              "sudo rm /tmp/db_pass.txt",
               "sudo chmod +x /var/www/api/scripts/*.sh",
               "cd /var/www/api && export HOME=/root && set -a && . ./.env && set +a && sudo -E ./scripts/start_server.sh"
             ]' \

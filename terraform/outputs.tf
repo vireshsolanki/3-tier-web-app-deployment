@@ -16,3 +16,7 @@ output "db_name" {
 output "github_actions_role_arn" {
   value = module.compute.github_actions_role_arn
 }
+
+output "db_password_secret_arn" {
+  value = module.secrets.db_password_secret_arn
+}

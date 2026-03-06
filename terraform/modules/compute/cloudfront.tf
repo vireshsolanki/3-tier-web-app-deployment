@@ -47,6 +47,7 @@ resource "aws_cloudfront_distribution" "web" {
 
     forwarded_values {
       query_string = false
+      headers      = ["Host"]
       cookies {
         forward = "none"
       }
@@ -68,6 +69,7 @@ resource "aws_cloudfront_distribution" "web" {
 
     forwarded_values {
       query_string = false
+      headers      = ["Host"]
       cookies {
         forward = "none"
       }

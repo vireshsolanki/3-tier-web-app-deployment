@@ -43,11 +43,19 @@ jobs:
           echo "Pushing artifact to S3 temporarily..."
           aws s3 cp web-app.zip s3://${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429/web-app.zip
           
-          echo "Triggering CodeDeploy..."
-          aws deploy create-deployment \
-            --application-name ${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-web-app \
-            --deployment-group-name ${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-web-dg \
-            --s3-location bucket=${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429,key=web-app.zip,bundleType=zip
+          echo "Triggering SSM Run Command for Web..."
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=tag:Name,Values=${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-web-instance" \
+            --comment "Deploy Web App" \
+            --parameters 'commands=[
+              "aws s3 cp s3://${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429/web-app.zip /tmp/web-app.zip",
+              "mkdir -p /var/www",
+              "unzip -o /tmp/web-app.zip -d /var/www/",
+              "chmod +x /var/www/web/scripts/*.sh",
+              "cd /var/www/web && ./scripts/start_server.sh"
+            ]' \
+            --region ${{ env.AWS_REGION }}
 
   build-and-deploy-api:
     runs-on: ubuntu-latest
@@ -77,8 +85,16 @@ jobs:
           
           aws s3 cp api-app.zip s3://${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429/api-app.zip
           
-          echo "Triggering CodeDeploy..."
-          aws deploy create-deployment \
-            --application-name ${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-api-app \
-            --deployment-group-name ${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-api-dg \
-            --s3-location bucket=${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429,key=api-app.zip,bundleType=zip
+          echo "Triggering SSM Run Command for API..."
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=tag:Name,Values=${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-api-instance" \
+            --comment "Deploy API App" \
+            --parameters 'commands=[
+              "aws s3 cp s3://${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429/api-app.zip /tmp/api-app.zip",
+              "mkdir -p /var/www",
+              "unzip -o /tmp/api-app.zip -d /var/www/",
+              "chmod +x /var/www/api/scripts/*.sh",
+              "cd /var/www/api && ./scripts/start_server.sh"
+            ]' \
+            --region ${{ env.AWS_REGION }}

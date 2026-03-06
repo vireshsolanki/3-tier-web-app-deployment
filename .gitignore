@@ -65,7 +65,7 @@ typings/
 *.tfstate
 *.tfstate.*
 crash.log
-*.tfplan
+tfplan*
 *.tfvars
 .terraformrc
 terraform.rc

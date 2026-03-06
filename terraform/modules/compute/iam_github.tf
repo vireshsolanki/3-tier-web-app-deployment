@@ -68,6 +68,16 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
           "codedeploy:GetApplicationRevision"
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:SendCommand",
+          "ssm:GetCommandInvocation",
+          "ssm:ListCommandInvocations",
+          "ec2:DescribeInstances"
+        ]
+        Resource = "*"
       }
     ]
   })

@@ -1,7 +1,8 @@
 #!/bin/bash
 cd /var/www/api
 npm install
-# The app connects to the DB based on env vars, which can be injected via parameter store or systemd
-# For now, start process using pm2
+# Ensure PM2 has a home directory even in SSM
+export HOME=/root
+pm2 delete api || true
 pm2 start ./bin/www --name "api"
 pm2 save

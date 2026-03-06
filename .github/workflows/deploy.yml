@@ -64,7 +64,7 @@ jobs:
               "sudo unzip -o /tmp/web-app.zip -d /var/www/",
               "sudo /snap/bin/aws s3 cp s3://${{ env.DEPLOY_BUCKET }}/env/web.env /var/www/web/.env || sudo aws s3 cp s3://${{ env.DEPLOY_BUCKET }}/env/web.env /var/www/web/.env",
               "sudo chmod +x /var/www/web/scripts/*.sh",
-              "cd /var/www/web && export $(sudo grep -v '^#' .env | xargs) && sudo -E ./scripts/start_server.sh"
+              "cd /var/www/web && export HOME=/root && set -a && . ./.env && set +a && sudo -E ./scripts/start_server.sh"
             ]' \
             --region ${{ env.AWS_REGION }}
 
@@ -116,6 +116,6 @@ jobs:
               "sudo unzip -o /tmp/api-app.zip -d /var/www/",
               "sudo /snap/bin/aws s3 cp s3://${{ env.DEPLOY_BUCKET }}/env/api.env /var/www/api/.env || sudo aws s3 cp s3://${{ env.DEPLOY_BUCKET }}/env/api.env /var/www/api/.env",
               "sudo chmod +x /var/www/api/scripts/*.sh",
-              "cd /var/www/api && export $(sudo grep -v '^#' .env | xargs) && sudo -E ./scripts/start_server.sh"
+              "cd /var/www/api && export HOME=/root && set -a && . ./.env && set +a && sudo -E ./scripts/start_server.sh"
             ]' \
             --region ${{ env.AWS_REGION }}

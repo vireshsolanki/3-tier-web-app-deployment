@@ -49,11 +49,17 @@ jobs:
             --targets "Key=tag:Name,Values=${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-web-instance" \
             --comment "Deploy Web App" \
             --parameters 'commands=[
+              "set -e",
+              "export DEBIAN_FRONTEND=noninteractive",
+              "which aws || (sudo apt-get update && sudo apt-get install -y awscli)",
+              "which unzip || (sudo apt-get update && sudo apt-get install -y unzip)",
+              "which node || (curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs)",
+              "which pm2 || (sudo npm install -g pm2)",
               "aws s3 cp s3://${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429/web-app.zip /tmp/web-app.zip",
-              "mkdir -p /var/www",
-              "unzip -o /tmp/web-app.zip -d /var/www/",
-              "chmod +x /var/www/web/scripts/*.sh",
-              "cd /var/www/web && ./scripts/start_server.sh"
+              "sudo mkdir -p /var/www/web",
+              "sudo unzip -o /tmp/web-app.zip -d /var/www/",
+              "sudo chmod +x /var/www/web/scripts/*.sh",
+              "cd /var/www/web && sudo ./scripts/start_server.sh"
             ]' \
             --region ${{ env.AWS_REGION }}
 
@@ -91,10 +97,16 @@ jobs:
             --targets "Key=tag:Name,Values=${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-api-instance" \
             --comment "Deploy API App" \
             --parameters 'commands=[
+              "set -e",
+              "export DEBIAN_FRONTEND=noninteractive",
+              "which aws || (sudo apt-get update && sudo apt-get install -y awscli)",
+              "which unzip || (sudo apt-get update && sudo apt-get install -y unzip)",
+              "which node || (curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs)",
+              "which pm2 || (sudo npm install -g pm2)",
               "aws s3 cp s3://${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-deployments-833899002429/api-app.zip /tmp/api-app.zip",
-              "mkdir -p /var/www",
-              "unzip -o /tmp/api-app.zip -d /var/www/",
-              "chmod +x /var/www/api/scripts/*.sh",
-              "cd /var/www/api && ./scripts/start_server.sh"
+              "sudo mkdir -p /var/www/api",
+              "sudo unzip -o /tmp/api-app.zip -d /var/www/",
+              "sudo chmod +x /var/www/api/scripts/*.sh",
+              "cd /var/www/api && sudo ./scripts/start_server.sh"
             ]' \
             --region ${{ env.AWS_REGION }}
